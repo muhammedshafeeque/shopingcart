@@ -36,6 +36,7 @@ router.get('/login',function(req,res){
 })
 router.get('/signup',function(req,res){
   res.render('../views/user/signup')
+  res.redirect('/login')
 })
 router.post('/login',(req,res)=>{
    userHelpers.doLogin(req.body).then((response)=>{
