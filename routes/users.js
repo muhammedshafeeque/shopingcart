@@ -15,14 +15,18 @@ const verifyLogin=(req,res,next)=>{
   }
 }
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   let user=req.session.user
   console.log(user)
+  let cartCound=null
+  if(req.session.user){
+    cartCound= await userHelpers.cartCount(req.session.user._id)
+  }
   productHelpers.getAllProducts().then((products)=>{
   
-    res.render('../views/user/view-products',{admin:false,products,user})
+    res.render('../views/user/view-products',{admin:false,products,user,cartCound})
   })
-
+ 
 });
 router.get('/login',function(req,res){
   if(req.session.loggedIn){
@@ -36,7 +40,7 @@ router.get('/login',function(req,res){
 })
 router.get('/signup',function(req,res){
   res.render('../views/user/signup')
-  res.redirect('/login')
+
 })
 router.post('/login',(req,res)=>{
    userHelpers.doLogin(req.body).then((response)=>{
@@ -57,15 +61,50 @@ router.post('/signup',(req,res)=>{
   
   userHelpers.doSignup(req.body).then((response)=>{
     console.log(response)
+    
+    
   })
+  
+  res.redirect('/login')
 
 })
 router.get('/logout',(req,res)=>{
   req.session.destroy()
   res.redirect('/')
 })
-router.get('/cart',verifyLogin,(req,res)=>{
-  res.render('../views/user/cart')
+router.get('/cart',verifyLogin, async(req,res)=>{
+  let user=req.session.user
+  let products=await userHelpers.getCartproduct(req.session.user._id)
+  let totalAmount= await userHelpers.totalAmount(user._id)
+  res.render('../views/user/cart' ,{totalAmount,products,user})
+})
+router.get('/add-to-cart/:id',(req,res)=>{ 
+  userHelpers.addtoCart(req.params.id,req.session.user._id).then(()=>{
+    res.json({status:true})
+  })
+  
+})
+router.post('/change-product-quantity',(req,res,next)=>{
+  
+  userHelpers.changeProductQuantity(req.body).then(async(response)=>{
+    console.log(req.body)
+    response.total= await userHelpers.totalAmount(req.body.userId)
+    res.json(response)
+  })
+})
+router.post('/remove-product',(req,res,next)=>{
+  
+  userHelpers.removeProduct(req.body).then((respons)=>{
+    res.json(response)
+  })
+})
+router.get('/place-order',verifyLogin,async(req,res)=>{
+  let user=req.session.user
+  let totalAmount= await userHelpers.totalAmount(user._id)
+  res.render('user/place-oders',{totalAmount,user})
+})
+router.post('/place-order',(req,res)=>{
+  console.log(req.body)
 })
 
 

@@ -1,0 +1,41 @@
+<section>
+    <div class="container">
+        <div class="col-6">
+            <form action="/admin/edit-product/{{proDetails._id}}" method="POST" enctype="multipart/form-data">
+                
+                    <label for="">Name</label>
+                    <input type="text" name="Name" class="form-control" value="{{proDetails.Name}}">
+
+
+                    <label for="">Catogory</label>
+                    <input type="text" name="Catogory" class="form-control" value="{{proDetails.Catogory}}">
+
+             
+                
+                    <label for="">Prise</label>
+                    <input type="text" name="Prise" class="form-control" value="{{proDetails.Prise}}">
+
+              
+                    <label for="">Description</label>
+                    <input type="text" name="Description" class="form-control" value="{{proDetails.Description}}">
+
+                
+                    <label for="">Image</label>
+                    <img style="width: 50px;  height: 100px;" src="/product-images/{{proDetails._id}}.jpg" id="imgvew">
+                    <input type="file" name="Image" class="form-control"  onchange="imageVew(event)">
+
+               
+
+
+                <br>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+</section> 
+
+<script>
+    function imageVew(event){
+        document.getElementById.('imgvew').src=URL.createObjectURL(event.target.files[0])
+    }
+</script>

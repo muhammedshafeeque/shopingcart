@@ -1,1 +1,61 @@
-<h1>Cart is Empty</h1>
+<section>
+
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="col-9 ">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Prise</th>
+                        <th scope="col">Quantity</th>
+                        <th></th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each products}}
+                    <tr>
+
+                        <th><img style="width: 40px;height: 50px;" src="/product-images/{{this.product._id}}.jpg"
+                                alt=""></th>
+                        <td>{{this.product.Name}}</td>
+                        <td>
+                            {{this.product.Prise}}
+                        </td>
+                            
+                        <td>
+                            <button class="cart-item-count mr-3" id="dec-button"
+                                onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',-1)">-</button>
+                            <span id="{{this.product._id}}">{{this.quantity}}</span>
+                            <button class="cart-item-count ml-3"
+                                onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',1)">+</button>
+                        </td>
+
+                        <td>
+                            <button class="btn btn-danger"
+                                onclick="removeProduct('{{this.product._id}}','{{this._id}}')">Remove</button>
+                        </td>
+                    </tr>
+
+                    {{/each}}
+
+                </tbody>
+
+
+            </table>
+
+            <hr>
+            <div class="float-end mt-5  ">
+             <h5>Total=RS.<span id="total">{{totalAmount}}</span> </h5><br>
+                <a href="/place-order" class="btn btn-success " style="width: 100%;">Place Order</a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<script>
+
+</script>
