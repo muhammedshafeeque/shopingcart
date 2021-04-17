@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 var objectId=require('mongodb').ObjectId;
 const { response } = require('express');
 const { ObjectId } = require('bson');
+const Razorpay=require('razorpay')
 var instance = new Razorpay({
     key_id: 'rzp_test_fYknrS5oyYru85',
     key_secret: 'fyS6TnS1nAWIxLu4e9U9VL8L',
@@ -220,7 +221,6 @@ module.exports={
          })
      },
      placeOrder:(order,products,amount)=>{
-         console.log(order)
          return new Promise(async(resolve,reject)=>{
             let status=await order['payement-methord']==='COD'?'placed':'pending'
             let orderObj= await{
@@ -264,7 +264,6 @@ module.exports={
          })
      },
      getProductDetails:(orderId)=>{
-         console.log(orderId)
          return new Promise (async(resolve,reject)=>{
              let products=await db.get().collection(collection.ORDER_COLLECTION).aggregate([
                 {
@@ -293,13 +292,21 @@ module.exports={
                     }
                 }
              ]).toArray()
-             console.log(products)
              resolve(products)
          })
 
      },
-     generateRazorepay:(orderId)=>{
+     generateRazorepay:(orderId,total)=>{
         return new Promise ((resolve,reject)=>{
+            var options = {
+                amount: total,  // amount in the smallest currency unit
+                currency: "INR",
+                receipt: ""+orderId
+              };
+              instance.orders.create(options, function(err, order) {
+                console.log(order);
+                resolve(order)
+              });
 
         })
      }

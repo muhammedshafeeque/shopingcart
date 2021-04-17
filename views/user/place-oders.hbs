@@ -1,91 +1,141 @@
 <section>
 
     <div class="container mt-5">
-        <form  id="checkout-form">
-        <div class="row">
-            <div class="col-sm ">
-                <div class="container">
+        <form id="checkout-form">
+            <div class="row">
+                <div class="col-sm ">
+                    <div class="container">
 
-                    <div class="col-9">
-                        <h3>Enter Delivery Details</h3><br>
-                    
-                         <label for="">Name</label>
-                        <input type="text" name="Name" id="name" class="form-control">
+                        <div class="col-9">
+                            <h3>Enter Delivery Details</h3><br>
 
-
-                        <label for="">Pincode</label>
-                        <input type="text" name="Pincode" id="pincode" class="form-control">
-                        
-                        <label for="">Mobile Number</label>
-                        <input type="text" name="Mobile" id="Mobile No" class="form-control">
-                        
-                        <input type="text" name="userId" value="{{user._id}}" hidden>
-                       
-
-                    </div>
-
-                </div>
-            </div>
+                            <label for="">Name</label>
+                            <input type="text" name="Name" id="name" class="form-control">
 
 
-            <div class="col-sm">
-                <div class="container mt-5">
-                    <div style="width:20rem;height:16rem;border:1px solid #000;">
-                        <div style="padding: 20px;">
-                            <div>
-                                <h5>Total amount Rs:{{totalAmount}}</h5>
-                            </div>
-                            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
-                            <div class="mt-3">
-                                <h6>Payement method</h6>
-                                
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payement-methord"
-                                        id="exampleRadios1" value="COD" checked>
-                                    <label class="form-check-label" for="exampleRadios1">
-                                        Cash On Delivery
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payement-methord"
-                                        id="exampleRadios2" value="ONLINE">
-                                    <label class="form-check-label" for="exampleRadios2">
-                                        Online Payment
-                                    </label>
-                                </div>
+                            <label for="">Pincode</label>
+                            <input type="text" name="Pincode" id="pincode" class="form-control">
 
-                                <div class="float-end mt-5">
-                                    <button class="btn btn-primary">Checkout</button>
-                                </div>
+                            <label for="">Mobile Number</label>
+                            <input type="text" name="Mobile" id="Mobile No" class="form-control">
 
-                            </div>
+                            <input type="text" name="userId" value="{{user._id}}" hidden>
+
 
                         </div>
+
                     </div>
-
                 </div>
-            </div>
 
-        </div>
+
+                <div class="col-sm">
+                    <div class="container mt-5">
+                        <div style="width:20rem;height:16rem;border:1px solid #000;">
+                            <div style="padding: 20px;">
+                                <div>
+                                    <h5>Total amount Rs:{{totalAmount}}</h5>
+                                </div>
+                                <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                                <div class="mt-3">
+                                    <h6>Payement method</h6>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payement-methord"
+                                            id="exampleRadios1" value="COD" checked>
+                                        <label class="form-check-label" for="exampleRadios1">
+                                            Cash On Delivery
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payement-methord"
+                                            id="exampleRadios2" value="ONLINE">
+                                        <label class="form-check-label" for="exampleRadios2">
+                                            Online Payment
+                                        </label>
+                                    </div>
+
+                                    <div class="float-end mt-5">
+                                        <button class="btn btn-primary">Checkout</button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </form>
 
     </div>
 
 </section>
+
+
 <script>
-    $("#checkout-form").submit((e)=>{
+    $("#checkout-form").submit((e) => {
         e.preventDefault()
         $.ajax({
-            url:'/place-order',
-            method:'post',
-            data:$("#checkout-form").serialize(),
-            success:(response)=>{
+            url: '/place-order',
+            method: 'post',
+            data: $("#checkout-form").serialize(),
+            success: (response) => {
                 alert(response)
-                if(response.status){
-                    location.href="/order-placed"
+                if (response.codSuccess) {
+                    location.href = "/order-placed"
+                } else {
+                    
+                    razorpayPayment(response)
                 }
             }
 
         })
     })
+    function razorpayPayment(order) {
+        var options = {
+            "key": "rzp_test_fYknrS5oyYru85", // Enter the Key ID generated from the Dashboard
+            "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Acme Corp",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": function (response) {
+                alert(response.razorpay_payment_id);
+                alert(response.razorpay_order_id);
+                alert(response.razorpay_signature)
+
+                veryFypayement(response,order)
+            },
+            "prefill": {
+                "name": "Gaurav Kumar",
+                "email": "gaurav.kumar@example.com",
+                "contact": "9999999999"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+            
+        };
+        var rzp1 = new Razorpay(options);
+         rzp1.open();
+    }
+    
+    function veryFypayement(payement,order){
+        $.ajax({
+             url:'/verfy-payement',
+             method:'post',
+             data:{
+                 payement,
+                 order
+             }
+        })
+    }
+
+
 </script>
