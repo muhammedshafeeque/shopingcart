@@ -82,7 +82,6 @@
             method: 'post',
             data: $("#checkout-form").serialize(),
             success: (response) => {
-                alert(response)
                 if (response.codSuccess) {
                     location.href = "/order-placed"
                 } else {
@@ -103,9 +102,7 @@
             "image": "https://example.com/your_logo",
             "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": function (response) {
-                alert(response.razorpay_payment_id);
-                alert(response.razorpay_order_id);
-                alert(response.razorpay_signature)
+                
 
                 veryFypayement(response,order)
             },
@@ -133,6 +130,15 @@
              data:{
                  payement,
                  order
+             },
+             success:(response)=>{
+                 if(response.status){
+                     alert('Your Payment Done By Successfully')
+                     location.href = "/order-placed"
+                 }else{
+                     alert('payement Failed')
+                 }
+
              }
         })
     }

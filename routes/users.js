@@ -137,6 +137,15 @@ router.get('/vew-products/:id', async (req, res) => {
 })
 router.post('/verfy-payement', (req, res) => {
   console.log(req.body)
+  userHelpers.verFyPayment(req.body).then(()=>{
+    userHelpers.changePaymentStatus(req.body['order[receipt]']).then(()=>{
+      res.json({status:true})
+    }).catch((err)=>{
+      console.log(err)
+      res.json({status:false,errMsg:''})
+    })
+
+  })
 })
 
 
