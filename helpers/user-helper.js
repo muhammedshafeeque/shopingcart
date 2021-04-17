@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt');
 var objectId=require('mongodb').ObjectId;
 const { response } = require('express');
 const { ObjectId } = require('bson');
+var instance = new Razorpay({
+    key_id: 'rzp_test_fYknrS5oyYru85',
+    key_secret: 'fyS6TnS1nAWIxLu4e9U9VL8L',
+  });
+  
  
 module.exports={
      doSignup:(userData)=>{
@@ -167,6 +172,7 @@ module.exports={
      },
      totalAmount:(userId)=>{
         return new Promise(async(resolve,reject)=>{
+
             let total= await db.get().collection(collection.CART_COLLECTION).aggregate([
                 {
                     $match:{user:objectId(userId)}
@@ -201,9 +207,100 @@ module.exports={
                 }
                 
             ]).toArray()
+
+            if(total!=0){
+                let totalamount =total[0].total
+                resolve(totalamount)
+            }else{
+              let  totalamount=0
+              resolve(totalamount)
+            }
             
             
-            resolve(total[0].total)
          })
+     },
+     placeOrder:(order,products,amount)=>{
+         console.log(order)
+         return new Promise(async(resolve,reject)=>{
+            let status=await order['payement-methord']==='COD'?'placed':'pending'
+            let orderObj= await{
+                deliveryDetails:{
+                    name:order.Name,
+                    pincode:order.Pincode,
+                    mobile:order.Mobile
+                },
+                userId:objectId(order.userId),
+                paymentMethord:order['payement-methord'],
+                products:products,
+                status:status,
+                totalamount:amount,
+                date:new Date()
+
+            }
+
+          await db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response)=>{
+              db.get().collection(collection.CART_COLLECTION).removeOne({user:objectId(order.userId)})
+            resolve(response.ops[0]._id)
+           }) 
+           
+
+         })
+
+    
+     },
+     getCartproductList:(userId)=>{
+         
+         return new Promise(async(resolve,reject)=>{
+             let cart=await db.get().collection(collection.CART_COLLECTION).findOne({user:objectId(userId)})
+             
+             resolve(cart.products)
+         })
+         
+     },
+     myOders:(userId)=>{
+         return new Promise(async(resolve,reject)=>{
+             let oders= await db.get().collection(collection.ORDER_COLLECTION).find({userId:objectId(userId)}).toArray()
+             resolve(oders)
+         })
+     },
+     getProductDetails:(orderId)=>{
+         console.log(orderId)
+         return new Promise (async(resolve,reject)=>{
+             let products=await db.get().collection(collection.ORDER_COLLECTION).aggregate([
+                {
+                    $match:{_id:objectId(orderId)}
+                },
+                {
+                    $unwind:'$products'
+                },
+                {
+                    $project:{
+                        item:'$products.item',
+                        quantity:'$products.quantity'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:collection.PRODUCT_COLLECTION,
+                        localField:'item',
+                        foreignField:'_id',
+                        as:'product'
+                    }
+                },
+                {
+                    $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }
+                }
+             ]).toArray()
+             console.log(products)
+             resolve(products)
+         })
+
+     },
+     generateRazorepay:(orderId)=>{
+        return new Promise ((resolve,reject)=>{
+
+        })
      }
  } 

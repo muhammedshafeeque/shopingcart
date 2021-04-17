@@ -1,0 +1,44 @@
+<section>
+
+    <div class="container mt-5">
+
+        <section>
+            <table class="table">
+                <thead>
+                    <tr>
+                        
+                        <th scope="col">Date</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Pincode</th>
+                        <th scope="col">Mobile Number</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Order Status</th>
+
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each oders}}
+                    <tr>
+                        <td>{{this.date}}</td>
+                        <td>{{this.deliveryDetails.name}}</td>
+                        <td>{{this.deliveryDetails.pincode}}</td>
+                         <td>{{this.deliveryDetails.mobile}}</td>
+                         <td>{{this.totalamount}}</td>
+                        <td>{{this.status}}</td>
+                        
+                        <td>
+                            <div class="d-grid gap-2 d-md-block">
+                                <a href="/vew-products/{{this._id}}" class="btn btn-primary" >Product Details</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+
+
+
+                </tbody>
+            </table>
+    </div>
+</section>
+</section>

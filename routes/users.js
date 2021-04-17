@@ -103,8 +103,37 @@ router.get('/place-order',verifyLogin,async(req,res)=>{
   let totalAmount= await userHelpers.totalAmount(user._id)
   res.render('user/place-oders',{totalAmount,user})
 })
-router.post('/place-order',(req,res)=>{
-  console.log(req.body)
+router.post('/place-order',async(req,res)=>{
+  let products=await userHelpers.getCartproductList(req.body.userId)
+  let totalAmount= await userHelpers.totalAmount(req.body.userId)
+  userHelpers.placeOrder(req.body,products,totalAmount).then((orderId)=>{
+    if(req.body['payement-methord']==='COD'){
+      res.json({status:true})
+    }else if(req.body['payement-methord']==='ONLINE'){
+      console.log(orderId)
+      userHelpers.generateRazorepay(orderId).then(()=>{
+        
+      })
+    }else{
+      console.log(err)
+    }
+    
+    
+  })
+  
+})
+router.get('/order-placed',verifyLogin,(req,res)=>{
+  let user=req.session.user
+  res.render('user/order-placed',{user})
+})
+router.get('/my-oders',verifyLogin,async(req,res)=>{
+  let user=req.session.user
+  let oders= await userHelpers.myOders(user._id)
+  res.render('user/my-oders',{user,oders})
+})
+router.get('/vew-products/:id',async(req,res)=>{
+  let product=await userHelpers.getProductDetails(req.params.id)
+  res.render('user/oderd-products',{product,user:req.session.user})
 })
 
 

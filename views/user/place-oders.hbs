@@ -41,14 +41,14 @@
                                 
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payement-methord"
-                                        id="exampleRadios1" value="cod" checked>
+                                        id="exampleRadios1" value="COD" checked>
                                     <label class="form-check-label" for="exampleRadios1">
                                         Cash On Delivery
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payement-methord"
-                                        id="exampleRadios2" value="online">
+                                        id="exampleRadios2" value="ONLINE">
                                     <label class="form-check-label" for="exampleRadios2">
                                         Online Payment
                                     </label>
@@ -81,7 +81,11 @@
             data:$("#checkout-form").serialize(),
             success:(response)=>{
                 alert(response)
+                if(response.status){
+                    location.href="/order-placed"
+                }
             }
+
         })
     })
 </script>
