@@ -6,8 +6,8 @@ const { response } = require('express');
 const { ObjectId } = require('bson');
 const Razorpay=require('razorpay')
 var instance = new Razorpay({
-    key_id: 'rzp_test_fYknrS5oyYru85',
-    key_secret: 'fyS6TnS1nAWIxLu4e9U9VL8L',
+    key_id: '',
+    key_secret: '',
   });
   
  
